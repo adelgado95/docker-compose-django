@@ -1,0 +1,33 @@
+version: '3'
+    
+services:
+  project-db:
+    image: postgres
+    container_name: project-db
+    environment:
+      - POSTGRES_DB=project
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=abc123
+    networks:
+      - projectnetwork
+    ports:
+      - "6432:5432"
+
+  project-admin:
+    container_name: project-admin
+    build: .
+    command: python manage.py runserver 0.0.0.0:8000
+    env_file:
+      - local.env
+    volumes: 
+      - .:/code
+    ports:
+      - "8000:8000"
+    depends_on:
+      - project-db
+    networks:
+      - projectnetwork
+
+networks:
+  projectnetwork:
+    driver: bridge
